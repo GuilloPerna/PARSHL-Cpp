@@ -1,0 +1,70 @@
+# ============================================================
+# .gitignore for PARSHL_Cpp  (CMake + GCC, C++20, multi-version)
+# ============================================================
+
+# ------------------------------------------------------------------
+# CMake build directories (any level)
+# ------------------------------------------------------------------
+build/
+**/build/
+
+# ------------------------------------------------------------------
+# CMake generated files
+# ------------------------------------------------------------------
+CMakeCache.txt
+cmake_install.cmake
+CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/CMakeFiles/
+CMakeScripts/
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# ------------------------------------------------------------------
+# Compiled object / archive / dependency files
+# ------------------------------------------------------------------
+*.o
+*.d
+*.a
+*.so
+*.so.*
+*.dylib
+
+# ------------------------------------------------------------------
+# Project-specific executables (no extension = Unix binary)
+# ------------------------------------------------------------------
+parshl
+parshl_audio_peaks
+parshl_demo
+
+# ------------------------------------------------------------------
+# Generic compiled binaries without extension at any depth
+# (matches executables produced by GCC with no suffix)
+# ------------------------------------------------------------------
+**/parshl
+**/parshl_audio_peaks
+**/parshl_demo
+
+# ------------------------------------------------------------------
+# Editor / IDE artifacts
+# ------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ------------------------------------------------------------------
+# OS artifacts
+# ------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# ------------------------------------------------------------------
+# KEEP: test audio data in wav/ directories
+# ------------------------------------------------------------------
+!**/wav/
+!**/wav/*.wav
