@@ -1,4 +1,4 @@
-# PARSHL — Final Package (English)
+# PARSHL — C++20 Port (V1/V2/V3)
 
 **Port and extensions author:** Guillermo Perna, 2026  
 **Original SAIL program:** Julius O. Smith III, Stanford CCRMA, 1985  
@@ -115,7 +115,7 @@ PARSHL automatically analyses channel 0 (left).
 ## Resynthesis audio samples
 
 Each version folder contains a `wav_resynthesis/` directory with
-additive synthesis output for the three main signals, generated with
+additive synthesis output for all four signals, generated with
 SDR-optimal parameters:
 
 | Signal | V1 SDR | V2 SDR | V3 SDR |
@@ -123,7 +123,7 @@ SDR-optimal parameters:
 | `flute-A5`      | −2.16 dB | −1.43 dB | **+0.65 dB** |
 | `Piano-C4`      | −2.52 dB | −0.25 dB | **+1.43 dB** |
 | `tamtam`        | −2.01 dB | −3.29 dB | **−1.08 dB** |
-| `female-speech` | −2.41 dB | −2.41 dB | **−0.33 dB** |
+| `female-speech` | −2.414 dB | −2.408 dB | **−0.333 dB** |
 
 V1 uses Nfft=1024 (historical SAIL parameters, Smith 1985).  
 V2 uses Nfft=2048 with complex spectral interpolation (Smith & Serra 1987,
