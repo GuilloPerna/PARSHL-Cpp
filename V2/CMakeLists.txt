@@ -34,18 +34,4 @@ add_executable(parshl_audio_peaks
 target_include_directories(parshl_audio_peaks PRIVATE src ${SNDFILE_INCLUDE_DIRS})
 target_link_libraries(parshl_audio_peaks PRIVATE ${SNDFILE_LIBRARIES} ${FFTW3_LIB})
 
-# ── parshl — minimal peak-analysis CLI (no synthesis output) ────────────────
-add_executable(parshl
-  src/main.cpp
-  src/parshl_globals.cpp
-  src/parshl_qinterp.cpp
-  src/parshl_findpeaks.cpp
-  src/parshl_dbffa.cpp
-  src/fftw_wrap.cpp
-  src/parshl_complex_peak.cpp
-  src/parshl_findpartials.cpp
-  src/parshl_tracker.cpp
-  src/parshl_qisort.cpp
-)
-target_include_directories(parshl PRIVATE src ${SNDFILE_INCLUDE_DIRS})
-target_link_libraries(parshl PRIVATE ${SNDFILE_LIBRARIES} ${FFTW3_LIB})
+

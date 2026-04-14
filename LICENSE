@@ -1,0 +1,28 @@
+PARSHL — Sinusoidal Analysis/Synthesis System
+==============================================
+
+Original SAIL implementation (1985):
+  Julius Orion Smith III
+  Center for Computer Research in Music and Acoustics (CCRMA)
+  Stanford University
+  https://ccrma.stanford.edu/~jos/
+
+Reference paper:
+  J.O. Smith III & X. Serra, "PARSHL: An Analysis/Synthesis Program for
+  Non-Harmonic Sounds Based on a Sinusoidal Representation", Proceedings
+  of the International Computer Music Conference (ICMC-87), 1987.
+  Also published as CCRMA Technical Report STAN-M-43.
+  Reprinted in Computer Music Journal, 14(4), 1990.
+
+C++20 port (V1/V2/V3) and experimental extensions:
+  Guillermo Perna, 2026
+
+---
+
+NOTICE: The original PARSHL program and its algorithms are the intellectual
+property of Julius Orion Smith III and Stanford University. This C++20 port
+is a derivative work made for research and educational purposes. A formal
+open-source license is pending confirmation from the original author.
+
+Until a license is formally established, redistribution or commercial use
+of this code requires explicit written permission from Julius O. Smith III.
