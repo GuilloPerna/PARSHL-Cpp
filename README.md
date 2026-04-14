@@ -137,15 +137,17 @@ closest-frequency assignment (`--closest-osc-free`, E2).
   The original SAIL source (`Parshl-source.txt`) initializes `Maxamp ← 0` (L942) and
   never updates it from the synthesis buffer — it is passed to `WriteH()` (L1795) only
   as file-header metadata. The `Sando()` output routine writes samples raw, with no
-  clamping. V1 and V2 reproduce this behaviour exactly by default.
+  clamping. **By default, this port does not prevent overshoot either: synthesized
+  samples may exceed ±1.0 and will clip on playback or when saved as integer PCM.**
+  V1 and V2 reproduce this SAIL behaviour exactly by default.
 - **V1/V2:** the SAIL heuristic `SigScl = 4/Nfft` is accurate for Hann windows but
-  introduces a **+0.67 dB** positive bias for Hamming windows. This causes slight clipping
-  on `flute-A5` (+2.47 dBFS / +2.77 dBFS for V1/V2). Normalized alternatives at −1 dBFS
-  are provided as `flute-A5_normalized_V1.wav` / `flute-A5_normalized_V2.wav`.
-  The optional flag `--normalize-peak=-1.0` is available for user convenience but is
-  **not** SAIL-faithful; it is absent from the original PARSHL.
+  introduces a **+0.67 dB** positive bias for Hamming windows. This causes overshoot
+  on `flute-A5` (+2.47 dBFS / +2.77 dBFS for V1/V2; 2303 / 4129 samples ≥ 1.0).
+  Normalized alternatives at −1 dBFS are provided as `flute-A5_normalized_V1.wav` /
+  `flute-A5_normalized_V2.wav`. The optional flag `--normalize-peak=-1.0` prevents
+  overshoot on any signal, but is **not** SAIL-faithful; it is absent from the original PARSHL.
 - **V3:** `--sigscl-analytic` applies `SigScl = 2/Σw` which is window-independent and
-  produces RMS within **−1 dB** of the original across all four test signals.
+  produces RMS within **−1 dB** of the original across all four test signals (no overshoot).
 
 The negative SDR on `tamtam` across all versions reflects the theoretical
 limit of sinusoidal additive synthesis for inharmonic percussive signals:
