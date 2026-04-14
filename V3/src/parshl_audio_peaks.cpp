@@ -96,11 +96,16 @@ static void usage() {
     << "                   --closest-osc-free → when recycling dead slots, pick slot with PrvOscFrq closest to new line\n"
     << "                   (V2 baseline: first dead slot; this is experimental only)\n"
     << "  E1 SigScl analytic (V3 experiment / Parshl-source.txt ~L944 'IS SIGSCL CORRECT? ?'):\n"
-    << "                   --sigscl-analytic  → SigScl = 1/sum(window) instead of SAIL heuristic 4/Nx\n"
+    << "                   --sigscl-analytic  → SigScl = 2/sum(window) instead of SAIL heuristic 4/Nx\n"
+    << "                   (DFT of real cosine: |X[k]| = (A/2)·Σw  →  SigScl=2/Σw; window-independent)\n"
     << "                   (only affects synthesis amplitude; tracker metrics unchanged)\n"
     << "  E4 OscPhs precision (V3 experiment / Parshl-source.txt L1046/L1667 audit C-2):\n"
     << "                   --oscphs-double    → preserve fractional phase at hop boundaries (no SAIL int truncation)\n"
     << "                   (only affects synthesis; tracker metrics unchanged)\n"
+    << "  N1 peak-normalize (post-synthesis, pre-write):\n"
+    << "                   --normalize-peak=<dBFS>  → scale output so that |peak| == 10^(dBFS/20)\n"
+    << "                   example: --normalize-peak=-1.0 prevents clipping on any synthesis\n"
+    << "                   note: SDR is measured before normalization; does not affect analysis\n"
     << "\n"
     << "examples:\n"
     << "  parshl_audio_peaks flute-A5.wav 1024 256 12 -60\n"
@@ -296,10 +301,12 @@ int main(int argc, char** argv) {
   // whose PrvOscFrq is closest to the new line, instead of the first dead slot (V2 baseline).
   bool closest_osc_free = false;
   // [V3 E1] --sigscl-analytic: replace the SAIL heuristic SigScl=4/Nx with an
-  // analytically derived value SigScl=1/sum(w[n]) based on the actual window.
-  // Origin Type C: deducted from STFT reconstruction theory (OLA normalisation).
+  // analytically derived value SigScl=2/sum(w[n]) based on the actual window.
+  // Origin Type C: derived from DFT reconstruction theory.
   // Source A: Parshl-source.txt ~L944: "IS SIGSCL CORRECT? ? (Synth scaling)"
-  // Source B: standard OLA synthesis normalisation: scale = 1/sum(window).
+  // Source B: DFT of real cosine A·cos(2πk₀n/N) with window w:
+  //           |X[k₀]| = (A/2)·Σw  →  LinAmp = |X[k₀]|·SigScl = A  →  SigScl = 2/Σw.
+  //           Factor 2 is a DFT property (real signal); Σw adapts to the actual window.
   bool sigscl_analytic = false;
   // [V3 E3] --dbspec-refine-amp: post-match amplitude refinement from same Xdb local peak.
   // Origin Type B+C:
@@ -356,6 +363,12 @@ int main(int argc, char** argv) {
   // Contract: Experimental. Disabled by default. V2 baseline unchanged when off.
   std::int64_t grs_groups = 0;
   std::int64_t grs_group_collision_count = 0;
+  // [N1] --normalize-peak=<dBFS>: post-synthesis peak-level normalization.
+  // Scales the output buffer so that |peak| = 10^(dBFS/20) before writing the WAV.
+  // Applied after the 32768 rescale; does NOT affect SDR measurement or tracker.
+  // Example: --normalize-peak=-1.0 prevents DAC clipping on any synthesis.
+  bool   normalize_peak_enabled = false;
+  double normalize_peak_dbfs    = -1.0;  // target level in dBFS (only used when enabled)
   std::vector<std::string> pos_args;
   pos_args.reserve(static_cast<std::size_t>(std::max(0, argc - 2)));
 
@@ -576,6 +589,18 @@ int main(int argc, char** argv) {
       grs_groups = std::stoll(argv[++i]);
       continue;
     }
+    // [N1] Post-synthesis peak-level normalization.
+    if (a == "--normalize-peak") {
+      if (i + 1 >= argc) { std::cerr << "missing value for --normalize-peak\n"; usage(); return 1; }
+      normalize_peak_dbfs    = std::stod(argv[++i]);
+      normalize_peak_enabled = true;
+      continue;
+    }
+    if (a.rfind("--normalize-peak=", 0) == 0) {
+      normalize_peak_dbfs    = std::stod(a.substr(std::string("--normalize-peak=").size()));
+      normalize_peak_enabled = true;
+      continue;
+    }
     if (a.rfind("--", 0) == 0) {
       std::cerr << "unknown option: " << a << "\n";
       usage();
@@ -704,15 +729,17 @@ int main(int argc, char** argv) {
   // Experiment:   SigScl analytic (E1)
   // Flag:         --sigscl-analytic
   // Origin:       Parshl-source.txt ~L944: "IS SIGSCL CORRECT? ? (Synth scaling)"
-  // Source B:     OLA reconstruction theory: SigScl = 1 / sum(w[n])
-  // Summary:      Replace SAIL heuristic 4/Nx with window-sum reciprocal.
+  // Source B:     DFT real cosine: |X[k]| = (A/2)·Σw  →  SigScl = 2 / sum(w[n])
+  // Summary:      Replace SAIL heuristic 4/Nx with correct analytic formula.
+  //               For Hann window: 4/Nfft = 2/Σw exactly (SAIL accidentally correct).
+  //               For other windows (Hamming, Dolph-Chebyshev, …) factor 2 still holds.
   //               Only affects synthesis amplitude; tracker unchanged.
   // Contract:     Experimental only.  Disabled by default.
   //               V2 baseline bit-identical when flag is off.
   const double sail_sigscl = 4.0 / static_cast<double>(stft.Nx); // SAIL: SigScl <- 4/Nx
   double sum_window = 0.0;
   for (double w : stft.win) sum_window += w;
-  const double analytic_sigscl = (sum_window > 0.0) ? 1.0 / sum_window : sail_sigscl;
+  const double analytic_sigscl = (sum_window > 0.0) ? 2.0 / sum_window : sail_sigscl;
   const double SigScl = sigscl_analytic ? analytic_sigscl : sail_sigscl;
   // end [V3 EXPERIMENT E1 --sigscl-analytic]
   parshl::FftwC2R ifft((int)Nfft);
@@ -1659,6 +1686,21 @@ int main(int argc, char** argv) {
     // The ×32768 applied during reading (io_sndfile.cpp) must be reversed so that the
     // float32 WAV is playable in any audio player.
     for (std::size_t i = 0; i < out_written; ++i) out_d[i] /= 32768.0;
+    // [N1] Optional post-synthesis peak-level normalization (--normalize-peak=<dBFS>).
+    // Applied after the 32768 rescale; SDR is computed from un-normalized data above.
+    if (normalize_peak_enabled) {
+      double cur_peak = 0.0;
+      for (std::size_t si = 0; si < out_written; ++si)
+        cur_peak = std::max(cur_peak, std::abs(out_d[si]));
+      if (cur_peak > 0.0) {
+        const double target = std::pow(10.0, normalize_peak_dbfs / 20.0);
+        const double gain   = target / cur_peak;
+        for (std::size_t si = 0; si < out_written; ++si) out_d[si] *= gain;
+        std::cout << "[NORM] peak-normalize: cur_peak=" << cur_peak
+                  << "  target=" << target
+                  << "  gain=" << 20.0 * std::log10(gain) << " dB\n";
+      }
+    }
     if (!parshl::WriteMonoWavFloat32(synth_out_wav, out_d, fs)) {
       std::cerr << "failed writing synthesized wav: " << synth_out_wav << "\n";
       return 4;

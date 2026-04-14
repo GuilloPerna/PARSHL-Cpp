@@ -120,16 +120,26 @@ SDR-optimal parameters:
 
 | Signal | V1 SDR | V2 SDR | V3 SDR |
 |--------|--------|--------|--------|
-| `flute-A5`      | −2.16 dB | −1.43 dB | **+0.65 dB** |
-| `Piano-C4`      | −2.52 dB | −0.25 dB | **+1.43 dB** |
-| `tamtam`        | −2.01 dB | −3.29 dB | **−1.08 dB** |
-| `female-speech` | −2.414 dB | −2.408 dB | **−0.333 dB** |
+| `flute-A5`      | −2.16 dB | −1.43 dB | −0.704 dB |
+| `Piano-C4`      | −2.52 dB | −0.25 dB | **+0.484 dB** |
+| `tamtam`        | −2.01 dB | −3.29 dB | −2.955 dB |
+| `female-speech` | −2.414 dB | −2.408 dB | −1.978 dB |
 
 V1 uses Nfft=1024 (historical SAIL parameters, Smith 1985).  
 V2 uses Nfft=2048 with complex spectral interpolation (Smith & Serra 1987,
 no phase corrections).  
-V3 uses Nfft=2048 + analytic OLA (E1) + double-precision OscPhs (E4) +
-closest-frequency assignment (E2).
+V3 uses Nfft=2048 + analytic DFT normalisation (`--sigscl-analytic`, E1 — corrected
+to `SigScl = 2/Σw`) + double-precision OscPhs (`--oscphs-double`, E4) +
+closest-frequency assignment (`--closest-osc-free`, E2).
+
+**Amplitude notes:**
+- **V1/V2:** the SAIL heuristic `SigScl = 4/Nfft` is accurate for Hann windows but
+  introduces a **+0.67 dB** positive bias for Hamming windows. This causes slight clipping
+  on `flute-A5` (+2.47 dBFS / +2.77 dBFS for V1/V2). Normalized alternatives at −1 dBFS
+  are provided as `flute-A5_normalized_V1.wav` / `flute-A5_normalized_V2.wav`.
+  Use `--normalize-peak=-1.0` to avoid clipping on any signal/parameter combination.
+- **V3:** `--sigscl-analytic` applies `SigScl = 2/Σw` which is window-independent and
+  produces RMS within **−1 dB** of the original across all four test signals.
 
 The negative SDR on `tamtam` across all versions reflects the theoretical
 limit of sinusoidal additive synthesis for inharmonic percussive signals:

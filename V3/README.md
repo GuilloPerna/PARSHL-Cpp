@@ -93,9 +93,10 @@ The binary is at `build/parshl_audio_peaks`.
 
 | Flag | Experiment | Measured effect |
 |------|------------|----------------|
-| `--sigscl-analytic` | E1 | Analytic OLA normalisation 1/Σw[n]. Eliminates SAIL amplitude bias. |
-| `--oscphs-double` | E4 | OscPhs in double precision. Eliminates phase drift. +4.65 dB SDR flute. |
+| `--sigscl-analytic` | E1 | Analytic DFT normalisation 2/Σw[n]. Correct amplitude for any window (Hann, Hamming, Dolph-Chebyshev…). |
+| `--oscphs-double` | E4 | OscPhs in double precision. Eliminates phase drift. |
 | `--closest-osc-free` | E2 | Recycles the oscillator with the closest frequency. Fewer assignment errors. |
+| `--normalize-peak=<dBFS>` | N1 | Scale output so \|peak\| = 10^(dBFS/20). Applied **after** SDR measurement. Example: `--normalize-peak=-1.0`. |
 
 ### All available flags
 
@@ -111,6 +112,7 @@ The binary is at `build/parshl_audio_peaks`.
 | `--damax-gate=N` | D6: active amplitude gate |
 | `--maxoscs=N` | Maximum simultaneous oscillators |
 | `--out-partials PREFIX` | R1: export per-frame amp/frq to WAV |
+| `--normalize-peak=<dBFS>` | N1: post-synthesis peak-level normalization (pre-write) |
 | `--synth` | Resynthesize after analysis |
 | `--out-wav <path>` | Save synthesis to float32 WAV |
 
@@ -124,22 +126,22 @@ The binary is at `build/parshl_audio_peaks`.
 BIN=./build/parshl_audio_peaks
 OPT="--sigscl-analytic --oscphs-double --closest-osc-free"
 
-# Flute A5 (~3 s, mono)  SDR=+0.650 dB
+# Flute A5 (~3 s, mono)  SDR=−0.704 dB
 $BIN ../wav/flute-A5.wav \
      2048 256 509 -60 21.533203 0 1 0 \
      --maxoscs=10 $OPT --synth --out-wav wav_resynthesis/flute-A5_V3.wav
 
-# Piano C4 (~36 s, stereo → channel 0)  SDR=+1.434 dB
+# Piano C4 (~36 s, stereo → channel 0)  SDR=+0.484 dB
 $BIN ../wav/Piano-C4.wav \
      2048 256 6197 -60 21.533203 0 1 0 \
      --maxoscs=16 $OPT --synth --out-wav wav_resynthesis/Piano-C4_V3.wav
 
-# Tamtam (~66 s, stereo → channel 0)  SDR=-1.076 dB
+# Tamtam (~66 s, stereo → channel 0)  SDR=−2.955 dB
 $BIN ../wav/tamtam.wav \
      2048 512 5714 -60 21.533203 0 1 0 \
      --maxoscs=32 $OPT --synth --out-wav wav_resynthesis/tamtam_V3.wav
 
-# Female speech (~3.6 s, mono)  SDR=-0.333 dB
+# Female speech (~3.6 s, mono)  SDR=−1.978 dB
 $BIN ../wav/female-speech.wav \
      2048 512 309 -60 21.533203 0 1 0 \
      --maxoscs=24 $OPT --synth --out-wav wav_resynthesis/female-speech_V3.wav
@@ -165,13 +167,18 @@ $BIN ../wav/flute-A5.wav \
 ### Verified canonical parameters
 
 Optimal parameters found by SDR grid search over Nfft, hop and maxoscs.
+SDR values below were re-measured after the E1 bug-fix (2/Σw, see §E1 note).
 
 | Signal | Nfft | hop | n_frames | ThreshDB | MinSepHz | maxoscs | SDR |
 |--------|------|-----|----------|----------|----------|---------|-----|
-| `flute-A5.wav` | 2048 | 256 | 509 | -60 | 21.533203 | 10 | +0.650 dB |
-| `Piano-C4.wav` | 2048 | 256 | 6197 | -60 | 21.533203 | 16 | +1.434 dB |
-| `tamtam.wav` | 2048 | 512 | 5714 | -60 | 21.533203 | 32 | −1.076 dB |
-| `female-speech.wav` | 2048 | 512 | 309 | -60 | 21.533203 | 24 | −0.333 dB |
+| `flute-A5.wav` | 2048 | 256 | 509 | -60 | 21.533203 | 10 | −0.704 dB |
+| `Piano-C4.wav` | 2048 | 256 | 6197 | -60 | 21.533203 | 16 | +0.484 dB |
+| `tamtam.wav` | 2048 | 512 | 5714 | -60 | 21.533203 | 32 | −2.955 dB |
+| `female-speech.wav` | 2048 | 512 | 309 | -60 | 21.533203 | 24 | −1.978 dB |
+
+> **E1 note (amplitude fix):** Prior to the 2/Σw correction, `--sigscl-analytic` used `1/Σw`,
+> which halved synthesis amplitude (−6.5 dB RMS) for non-Hann windows. The grid-search params above
+> were originally tuned at the wrong amplitude; a future re-search may yield higher SDR values.
 
 ---
 

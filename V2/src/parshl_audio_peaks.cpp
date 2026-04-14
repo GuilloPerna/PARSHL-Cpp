@@ -91,6 +91,10 @@ static void usage() {
     << "  R2 DBspec frequency refinement (JOS 8-JUL-85 / Parshl-source.txt L1425, conservative V2 approx):\n"
     << "                   --dbspec-refine    → post-match local max search in dB spectrum (frq only, no clobber)\n"
     << "                   note: matching unchanged; only OscFrq refined; no effect on amplitude, D4, or STATS when off\n"
+    << "  N1 peak-normalize (post-synthesis, pre-write):\n"
+    << "                   --normalize-peak=<dBFS>  → scale output so that |peak| == 10^(dBFS/20)\n"
+    << "                   example: --normalize-peak=-1.0 prevents clipping on any synthesis\n"
+    << "                   note: SDR is measured before normalization; does not affect analysis\n"
     << "\n"
     << "examples:\n"
     << "  parshl_audio_peaks flute-A5.wav 1024 256 12 -60\n"
@@ -282,6 +286,11 @@ int main(int argc, char** argv) {
   // After update_map(), each active osc searches Xdb locally for a better frq estimate.
   // Xdb is read-only; matching/amplitude/D4/STATS are unaffected when disabled.
   bool dbspec_refine = false;
+  // [N1] --normalize-peak=<dBFS>: post-synthesis peak-level normalization.
+  // Scales the output buffer so that |peak| = 10^(dBFS/20) before writing the WAV.
+  // Applied after the 32768 rescale; does NOT affect SDR measurement or tracker.
+  bool   normalize_peak_enabled = false;
+  double normalize_peak_dbfs    = -1.0;
   std::vector<std::string> pos_args;
   pos_args.reserve(static_cast<std::size_t>(std::max(0, argc - 2)));
 
@@ -445,6 +454,18 @@ int main(int argc, char** argv) {
     // instead of LinFrqs." -- NOT the full DBspec matching; only post-match freq refinement.
     if (a == "--dbspec-refine") {
       dbspec_refine = true;
+      continue;
+    }
+    // [N1] Post-synthesis peak-level normalization.
+    if (a == "--normalize-peak") {
+      if (i + 1 >= argc) { std::cerr << "missing value for --normalize-peak\n"; usage(); return 1; }
+      normalize_peak_dbfs    = std::stod(argv[++i]);
+      normalize_peak_enabled = true;
+      continue;
+    }
+    if (a.rfind("--normalize-peak=", 0) == 0) {
+      normalize_peak_dbfs    = std::stod(a.substr(std::string("--normalize-peak=").size()));
+      normalize_peak_enabled = true;
       continue;
     }
     if (a.rfind("--", 0) == 0) {
@@ -1325,6 +1346,21 @@ int main(int argc, char** argv) {
     // The ×32768 applied on read (io_sndfile.cpp) must be undone so that the
     // float32 WAV is reproducible in any audio player.
     for (std::size_t i = 0; i < out_written; ++i) out_d[i] /= 32768.0;
+    // [N1] Optional post-synthesis peak-level normalization (--normalize-peak=<dBFS>).
+    // Applied after the 32768 rescale; SDR is computed from un-normalized data above.
+    if (normalize_peak_enabled) {
+      double cur_peak = 0.0;
+      for (std::size_t si = 0; si < out_written; ++si)
+        cur_peak = std::max(cur_peak, std::abs(out_d[si]));
+      if (cur_peak > 0.0) {
+        const double target = std::pow(10.0, normalize_peak_dbfs / 20.0);
+        const double gain   = target / cur_peak;
+        for (std::size_t si = 0; si < out_written; ++si) out_d[si] *= gain;
+        std::cout << "[NORM] peak-normalize: cur_peak=" << cur_peak
+                  << "  target=" << target
+                  << "  gain=" << 20.0 * std::log10(gain) << " dB\n";
+      }
+    }
     if (!parshl::WriteMonoWavFloat32(synth_out_wav, out_d, fs)) {
       std::cerr << "failed writing synthesized wav: " << synth_out_wav << "\n";
       return 4;
