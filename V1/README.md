@@ -95,6 +95,8 @@ ls -lh build/parshl_audio_peaks
 | `--legacy` | SAIL 1985 faithful mode. Recommended to document V1 intent. |
 | `--synth` | Resynthesize after analysis. Without this flag, analysis only. |
 | `--out-wav <path>` | Save synthesis to a float32 WAV file. |
+| `--maxoscs=N` | Maximum simultaneous oscillators |
+| `--normalize-peak=<dBFS>` | N1: post-synthesis peak normalization. Example: `--normalize-peak=-1.0`. Not SAIL-faithful. |
 
 ---
 
@@ -124,6 +126,15 @@ $BIN ../wav/tamtam.wav \
 $BIN ../wav/female-speech.wav \
      1024 256 622 -60 43.066406 0 1 0 1024 \
      --maxoscs=16 --synth --out-wav wav_resynthesis/female-speech_V1.wav
+```
+
+### Normalized WAV (convenience, non-SAIL-faithful)
+
+```bash
+# Flute A5 at −1 dBFS — prevents DAC clipping; not part of default SAIL behaviour
+$BIN ../wav/flute-A5.wav \
+     1024 256 513 -60 43.066406 0 1 0 676 \
+     --maxoscs=12 --normalize-peak=-1.0 --synth --out-wav wav_resynthesis/flute-A5_normalized_V1.wav
 ```
 
 Output WAVs are float32, 44100 Hz, mono.

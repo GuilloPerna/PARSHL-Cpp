@@ -132,6 +132,15 @@ $BIN ../wav/female-speech.wav \
      --maxoscs=16 --synth --out-wav wav_resynthesis/female-speech_V2.wav
 ```
 
+### Normalized WAV (convenience, non-SAIL-faithful)
+
+```bash
+# Flute A5 at −1 dBFS — prevents DAC clipping; not part of default SAIL behaviour
+$BIN ../wav/flute-A5.wav \
+     2048 256 509 -60 21.533203 0 1 0 \
+     --maxoscs=32 --normalize-peak=-1.0 --synth --out-wav wav_resynthesis/flute-A5_normalized_V2.wav
+```
+
 ### Legacy mode (reproduces V1 exactly)
 
 ```bash
