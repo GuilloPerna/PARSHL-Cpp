@@ -101,6 +101,7 @@ The binary is at `build/parshl_audio_peaks`.
 | `--out-partials PREFIX` | Export amp/frq: PREFIX.amp.wav + PREFIX.frq.wav (R1) |
 | `--synth` | Resynthesize after analysis |
 | `--out-wav <path>` | Save synthesis to float32 WAV |
+| `--normalize-peak=<dBFS>` | N1: post-synthesis peak normalization. Example: `--normalize-peak=-1.0`. Not SAIL-faithful. |
 
 ---
 
