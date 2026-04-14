@@ -102,10 +102,15 @@ static void usage() {
     << "  E4 OscPhs precision (V3 experiment / Parshl-source.txt L1046/L1667 audit C-2):\n"
     << "                   --oscphs-double    → preserve fractional phase at hop boundaries (no SAIL int truncation)\n"
     << "                   (only affects synthesis; tracker metrics unchanged)\n"
-    << "  N1 peak-normalize (post-synthesis, pre-write):\n"
-    << "                   --normalize-peak=<dBFS>  → scale output so that |peak| == 10^(dBFS/20)\n"
-    << "                   example: --normalize-peak=-1.0 prevents clipping on any synthesis\n"
-    << "                   note: SDR is measured before normalization; does not affect analysis\n"
+    << "  N1 peak-normalize — OPTIONAL user convenience, not in PARSHL original (post-synthesis, pre-write):\n"
+    << "                   Default (no flag): SAIL-faithful. The original PARSHL (Parshl-source.txt) has NO output\n"
+    << "                   normalization or overshoot protection. \"Maxamp\" in the SAIL source (L942) is\n"
+    << "                   initialized to 0 and never updated from the output buffer; it is only a file-header\n"
+    << "                   metadata field. V1/V2 reproduce this behaviour exactly: samples may exceed ±1.0.\n"
+    << "                   V3 with --sigscl-analytic produces amplitudes within −1 dB RMS of the original.\n"
+    << "                   --normalize-peak=<dBFS>  → OPTIONAL: scale output so that |peak| == 10^(dBFS/20)\n"
+    << "                   example: --normalize-peak=-1.0  (prevents DAC clipping; not SAIL-faithful)\n"
+    << "                   note: SDR is measured before normalization; analysis and tracker are unaffected\n"
     << "\n"
     << "examples:\n"
     << "  parshl_audio_peaks flute-A5.wav 1024 256 12 -60\n"
@@ -363,10 +368,19 @@ int main(int argc, char** argv) {
   // Contract: Experimental. Disabled by default. V2 baseline unchanged when off.
   std::int64_t grs_groups = 0;
   std::int64_t grs_group_collision_count = 0;
-  // [N1] --normalize-peak=<dBFS>: post-synthesis peak-level normalization.
-  // Scales the output buffer so that |peak| = 10^(dBFS/20) before writing the WAV.
-  // Applied after the 32768 rescale; does NOT affect SDR measurement or tracker.
-  // Example: --normalize-peak=-1.0 prevents DAC clipping on any synthesis.
+  // [N1] --normalize-peak=<dBFS>: OPTIONAL post-synthesis peak-level normalization.
+  //
+  // PARSHL/SAIL faithfulness note:
+  //   The original PARSHL (Parshl-source.txt) has NO output normalization or overshoot protection.
+  //   'Maxamp' (SAIL L80, L942) is set to 0 before the main loop and never updated from the
+  //   synthesis output buffer. It is passed to WriteH() (L1795) purely as file-header metadata
+  //   (with value 0). The Sando() output call writes samples raw with no clamping.
+  //   V1 and V2 preserve this behaviour by default; V3 with --sigscl-analytic gives amplitudes
+  //   within ~1 dB RMS of the original (still no clamping applied).
+  //
+  //   This flag is added ONLY for user convenience (e.g. preventing DAC clipping).
+  //   When enabled, it scales the output buffer after synthesis so |peak| = 10^(dBFS/20).
+  //   It does NOT affect analysis, tracker metrics, or SDR computation.
   bool   normalize_peak_enabled = false;
   double normalize_peak_dbfs    = -1.0;  // target level in dBFS (only used when enabled)
   std::vector<std::string> pos_args;

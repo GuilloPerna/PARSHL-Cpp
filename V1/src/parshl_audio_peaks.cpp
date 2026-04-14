@@ -115,10 +115,14 @@ static void usage() {
     << "                   --t2-rank-cost → add amplitude-rank penalty to Hungarian cost (auto-enables --t2-global-assign)\n"
     << "                   --t2-wrank=N → set rank penalty weight (default 1.0, requires --t2-rank-cost)\n"
     << "                   (not validated with --reverse-analysis or --t1-peak-claim)\n"
-    << "  N1 peak-normalize (post-synthesis, pre-write):\n"
-    << "                   --normalize-peak=<dBFS>  → scale output so that |peak| == 10^(dBFS/20)\n"
-    << "                   example: --normalize-peak=-1.0 prevents clipping on any synthesis\n"
-    << "                   note: SDR is measured before normalization; does not affect analysis\n"
+    << "  N1 peak-normalize — OPTIONAL user convenience, not in PARSHL original (post-synthesis, pre-write):\n"
+    << "                   Default (no flag): SAIL-faithful. The original PARSHL (Parshl-source.txt) has NO output\n"
+    << "                   normalization or overshoot protection. \"Maxamp\" in the SAIL source (L942) is\n"
+    << "                   initialized to 0 and never updated from the output buffer; it is only a file-header\n"
+    << "                   metadata field. V1/V2 reproduce this behaviour exactly: samples may exceed ±1.0.\n"
+    << "                   --normalize-peak=<dBFS>  → OPTIONAL: scale output so that |peak| == 10^(dBFS/20)\n"
+    << "                   example: --normalize-peak=-1.0  (prevents DAC clipping; not SAIL-faithful)\n"
+    << "                   note: SDR is measured before normalization; analysis and tracker are unaffected\n"
     << "\n"
     << "examples:\n"
     << "  parshl_audio_peaks flute-A5.wav 1024 256 12 -60\n"
@@ -402,9 +406,18 @@ int main(int argc, char** argv) {
   bool   t4_phase_coherent = false;          // [§68] T4 enabled (S3 + S2)
   double t4_alpha          = 0.0;            // [§68] S2 correction weight in (0,1]
   std::int64_t t4_correction_count_accum = 0; // [§68] accumulated correction events
-  // [N1] --normalize-peak=<dBFS>: post-synthesis peak-level normalization.
-  // Scales the output buffer so that |peak| = 10^(dBFS/20) before writing the WAV.
-  // Applied after the 32768 rescale; does NOT affect SDR measurement or tracker.
+  // [N1] --normalize-peak=<dBFS>: OPTIONAL post-synthesis peak-level normalization.
+  //
+  // PARSHL/SAIL faithfulness note:
+  //   The original PARSHL (Parshl-source.txt) has NO output normalization or overshoot protection.
+  //   'Maxamp' (SAIL L80, L942) is set to 0 before the main loop and never updated from the
+  //   synthesis output buffer. It is passed to WriteH() (L1795) purely as file-header metadata
+  //   (with value 0). The Sando() output call writes samples raw with no clamping.
+  //   V1 and V2 preserve this behaviour by default: synthesis output may exceed ±1.0.
+  //
+  //   This flag is added ONLY for user convenience (e.g. preventing DAC clipping).
+  //   When enabled, it scales the output buffer after synthesis so |peak| = 10^(dBFS/20).
+  //   It does NOT affect analysis, tracker metrics, or SDR computation.
   bool   normalize_peak_enabled = false;
   double normalize_peak_dbfs    = -1.0;
   std::vector<std::string> pos_args;
