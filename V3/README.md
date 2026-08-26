@@ -1,10 +1,11 @@
 # PARSHL V3 — Experimental Layer
 
-**Port and extensions author:** Guillermo Perna, 2026  
+**Port and extensions author:** Guillermo Luis Perna, 2026  
 **Original:** Julius O. Smith III & Xavier Serra, Stanford CCRMA, 1985  
-**Criterion:** Verified improvement in tracking and synthesis metrics over the V2 baseline.
+**Criterion:** Verified improvement in tracking and synthesis metrics over the V2 baseline.  
+**Validated by the original author:** this work was reviewed and validated by Julius Orion Smith III (2026).  
 
-See `PARSHL_V3_Experimental_AUDIT2_EN.pdf` for the full report.
+See [`../docs/PARSHL_V3_Experimental_AUDIT2_EN.pdf`](../docs/PARSHL_V3_Experimental_AUDIT2_EN.pdf) for the full report.
 
 ---
 
@@ -198,7 +199,6 @@ SDR values below were re-measured after the E1 bug-fix (2/Σw, see §E1 note).
 V3/
 ├── README.md                              ← this file
 ├── CMakeLists.txt                         ← build system
-├── PARSHL_V3_Experimental_AUDIT2_EN.pdf   ← experimental report
 ├── src/                                   ← C++20 source code
 │   ├── parshl_audio_peaks.cpp             ← main pipeline + D1–D7 + E1–E6
 │   ├── parshl_tracker.cpp                 ← tracker + D5/D6/D7/E2

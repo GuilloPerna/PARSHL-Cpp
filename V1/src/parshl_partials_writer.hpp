@@ -2,7 +2,7 @@
 // PARSHL — Sinusoidal Analysis/Synthesis System
 // Original implementation in SAIL (1985): Julius Orion Smith III
 //   Stanford CCRMA
-// C++20 port (V1): Guillermo Perna (2026)
+// C++20 port (V1): Guillermo Luis Perna (2026)
 // Ref: Smith & Serra, ICMC-87 / CCRMA STAN-M-43; CMJ 14(4) 1990
 // ─────────────────────────────────────────────────────────────────────
 // OutPartials WAV writer — §28 / SAIL Parshl-source.txt L500–510, L1818–1824.

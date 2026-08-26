@@ -1,10 +1,11 @@
 # PARSHL V1 — Faithful Port of SAIL 1985
 
-**Port author:** Guillermo Perna, 2026  
+**Port author:** Guillermo Luis Perna, 2026  
 **Original:** Julius O. Smith III & Xavier Serra, Stanford CCRMA, 1985  
-**Criterion:** Structural, algorithmic and numerical fidelity to the original SAIL.
+**Criterion:** Structural, algorithmic and numerical fidelity to the original SAIL.  
+**Validated by the original author:** this work was reviewed and validated by Julius Orion Smith III (2026).  
 
-See `PARSHL_V1_Validation_AUDIT2_EN.pdf` for the full validation report.
+See [`../docs/PARSHL_V1_Validation_AUDIT2_EN.pdf`](../docs/PARSHL_V1_Validation_AUDIT2_EN.pdf) for the full validation report.
 
 ---
 
@@ -162,7 +163,6 @@ Use the values in this table, not approximations.
 V1/
 ├── README.md                            ← this file
 ├── CMakeLists.txt                       ← build system
-├── PARSHL_V1_Validation_AUDIT2_EN.pdf   ← validation report
 ├── src/                                 ← C++20 source code
 │   ├── parshl_audio_peaks.cpp           ← main pipeline
 │   ├── parshl_tracker.cpp               ← partial tracking (UpdateMap)

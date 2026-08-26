@@ -3,7 +3,7 @@
 // Original implementation in SAIL (1985): Julius Orion Smith III
 //   Stanford CCRMA
 // C++20 port, archaeological extensions (V2), and experimental
-//   improvements (V3): Guillermo Perna (2026)
+//   improvements (V3): Guillermo Luis Perna (2026)
 // Ref: Smith & Serra, ICMC-87 / CCRMA STAN-M-43; CMJ 14(4) 1990
 // ─────────────────────────────────────────────────────────────────────
 #include "parshl_tracker.hpp"

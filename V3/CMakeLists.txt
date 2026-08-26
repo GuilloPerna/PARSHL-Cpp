@@ -1,4 +1,4 @@
-# PARSHL — Original SAIL version by J.O. Smith III (1985); C++20/23 migration by Guillermo Perna (2026).
+# PARSHL — Original SAIL version by J.O. Smith III (1985); C++20/23 migration by Guillermo Luis Perna (2026).
 # V3 — Experimental phase: E1–E6 improvements over V2 baseline.
 cmake_minimum_required(VERSION 3.20)
 project(parshl_v3 CXX)

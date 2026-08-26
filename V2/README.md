@@ -1,10 +1,11 @@
 # PARSHL V2 — Archaeological Superset
 
-**Port and extensions author:** Guillermo Perna, 2026  
+**Port and extensions author:** Guillermo Luis Perna, 2026  
 **Original:** Julius O. Smith III & Xavier Serra, Stanford CCRMA, 1985  
-**Criterion:** Mathematical and archaeological correctness per Smith & Serra (1987, 1990).
+**Criterion:** Mathematical and archaeological correctness per Smith & Serra (1987, 1990).  
+**Validated by the original author:** this work was reviewed and validated by Julius Orion Smith III (2026).  
 
-See `PARSHL_V2_Validation_AUDIT2_EN.pdf` for the full validation report.
+See [`../docs/PARSHL_V2_Validation_AUDIT2_EN.pdf`](../docs/PARSHL_V2_Validation_AUDIT2_EN.pdf) for the full validation report.
 
 ---
 
@@ -170,7 +171,6 @@ Optimal parameters found by SDR grid search over Nfft, hop and maxoscs.
 V2/
 ├── README.md                            ← this file
 ├── CMakeLists.txt                       ← build system
-├── PARSHL_V2_Validation_AUDIT2_EN.pdf   ← validation report
 ├── src/                                 ← C++20 source code
 │   ├── parshl_audio_peaks.cpp           ← main pipeline + flags D1–D7
 │   ├── parshl_tracker.cpp               ← UpdateMap + D5 recycling + D6 + D7

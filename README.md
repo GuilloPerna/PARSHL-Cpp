@@ -1,8 +1,10 @@
 # PARSHL — C++20 Port (V1/V2/V3)
 
-**Port and extensions author:** Guillermo Perna, 2026  
+**Port and extensions author:** Guillermo Luis Perna, 2026  
 **Original SAIL program:** Julius O. Smith III, Stanford CCRMA, 1985  
-**1987 paper (V2 features):** Julius O. Smith III & Xavier Serra, ICMC-87 / CMJ 14(4), 1990
+**1987 paper (V2 features):** Julius O. Smith III & Xavier Serra, ICMC-87 / CMJ 14(4), 1990  
+**Validated by the original author:** this work was reviewed and validated by Julius Orion Smith III (2026).  
+**License:** MIT (see [License](#license))
 
 ---
 
@@ -10,15 +12,17 @@
 
 ```
 PARSHL_Cpp/
-├── README.md                                    ← this file
-├── PARSHL_V1_V2_V3_Comparative_AUDIT2_EN.pdf   ← three-version comparative report
+├── README.md          ← this file
+├── LICENSE            ← MIT (original + port)
+├── original_source/   ← Smith's 1985 SAIL listing (parshl-source.txt)
+├── docs/              ← validation reports (V1, V2, V3) and comparative report
 ├── wav/   ← canonical test signals (shared by all versions)
 ├── V1/    ← Faithful port of Smith's SAIL 1985 (wav_resynthesis/ inside)
 ├── V2/    ← Smith & Serra 1987 paper features (wav_resynthesis/ inside)
 └── V3/    ← Author's experimental layer (wav_resynthesis/ inside)
 ```
 
-Each folder contains: complete source code, CMakeLists.txt, test WAVs, README with build and CLI instructions, and validation report PDF.
+Each version folder contains: complete source code, CMakeLists.txt, README with build and CLI instructions, and resynthesis WAVs. The validation reports are in `docs/`.
 
 ---
 
@@ -86,9 +90,16 @@ Build takes 10–30 seconds depending on hardware.
 
 ---
 
-## Comparative report
+## Validation reports (`docs/`)
 
-`PARSHL_V1_V2_V3_Comparative_AUDIT2_EN.pdf` compares all three versions:
+| File | Content |
+|------|---------|
+| `PARSHL_V1_Validation_AUDIT2_EN.pdf` | V1 fidelity to the SAIL 1985 original |
+| `PARSHL_V2_Validation_AUDIT2_EN.pdf` | V2 archaeological features (D1–D7) |
+| `PARSHL_V3_Experimental_AUDIT2_EN.pdf` | V3 experimental layer (E1/E2/E4) |
+| `PARSHL_V1_V2_V3_Comparative_AUDIT2_EN.pdf` | three-version comparison |
+
+The comparative report covers:
 - Feature table per version
 - True tracking baseline (full signals, 2026-04-05)
 - V3 grid search results
@@ -153,3 +164,22 @@ The negative SDR on `tamtam` across all versions reflects the theoretical
 limit of sinusoidal additive synthesis for inharmonic percussive signals:
 the broad-band noise component of the attack cannot be represented by a
 finite sum of sinusoids, regardless of parameter settings.
+
+---
+
+## License
+
+This repository is released under the **MIT License** — see [`LICENSE`](LICENSE).
+
+- The original PARSHL program (SAIL, 1985) is © Julius O. Smith III, who
+  released the software he wrote in this area under the MIT License in 2026
+  and authorised its inclusion here (`original_source/parshl-source.txt`).
+- The C++20 port (V1/V2/V3) and the experimental extensions are
+  © 2026 Guillermo Luis Perna, released under the same MIT License.
+- This work was reviewed and validated by Julius Orion Smith III (2026).
+
+The reference paper (Smith & Serra, "PARSHL: An Analysis/Synthesis Program for
+Non-Harmonic Sounds Based on a Sinusoidal Representation", ICMC-87 / CMJ 14(4),
+1990) is available from the original author's page:
+<https://ccrma.stanford.edu/~jos/parshl/>. If you use this code in academic
+work, please cite that paper and this repository.
