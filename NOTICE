@@ -1,0 +1,26 @@
+PARSHL — C++20 Port (V1/V2/V3)
+NOTICE
+
+Copyright (c) 1985 Julius O. Smith III — original PARSHL implementation (SAIL),
+  Center for Computer Research in Music and Acoustics (CCRMA), Stanford University.
+Copyright (c) 2026 Guillermo Luis Perna — C++20 port (V1/V2/V3) and experimental
+  extensions.
+
+Licensed under the MIT License (see LICENSE).
+
+The original PARSHL program (1985, SAIL) reproduced in `original_source/`
+and the algorithms it implements are the work of Julius O. Smith III
+(CCRMA, Stanford University, https://ccrma.stanford.edu/~jos/). In 2026
+the original author released the PARSHL software he wrote under the MIT
+License and authorised its inclusion in this repository. This C++20 port
+and its extensions are released under the same MIT License by Guillermo
+Luis Perna. This work was reviewed and validated by Julius Orion Smith III
+(2026).
+
+Reference paper:
+  J.O. Smith III & X. Serra, "PARSHL: An Analysis/Synthesis Program for
+  Non-Harmonic Sounds Based on a Sinusoidal Representation", Proceedings
+  of the International Computer Music Conference (ICMC-87), 1987.
+  Also published as CCRMA Technical Report STAN-M-43; reprinted in
+  Computer Music Journal, 14(4), 1990.
+  https://ccrma.stanford.edu/~jos/parshl/

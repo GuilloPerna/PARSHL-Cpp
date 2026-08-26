@@ -14,6 +14,7 @@
 PARSHL_Cpp/
 ├── README.md          ← this file
 ├── LICENSE            ← MIT (original + port)
+├── NOTICE             ← attribution and provenance
 ├── original_source/   ← Smith's 1985 SAIL listing (parshl-source.txt)
 ├── docs/              ← validation reports (V1, V2, V3) and comparative report
 ├── wav/   ← canonical test signals (shared by all versions)
@@ -169,7 +170,7 @@ finite sum of sinusoids, regardless of parameter settings.
 
 ## License
 
-This repository is released under the **MIT License** — see [`LICENSE`](LICENSE).
+This repository is released under the **MIT License** — see [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
 
 - The original PARSHL program (SAIL, 1985) is © Julius O. Smith III, who
   released the software he wrote in this area under the MIT License in 2026
