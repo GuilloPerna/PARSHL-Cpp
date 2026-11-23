@@ -11,7 +11,7 @@
 ## Package contents
 
 ```
-PARSHL_Cpp/
+PARSHL-Cpp/
 ├── README.md          ← this file
 ├── LICENSE            ← MIT (original + port)
 ├── NOTICE             ← attribution and provenance
@@ -146,7 +146,7 @@ closest-frequency assignment (`--closest-osc-free`, E2).
 
 **Amplitude notes:**
 - **PARSHL original has no output normalization or overshoot protection.**
-  The original SAIL source (`Parshl-source.txt`) initializes `Maxamp ← 0` (L942) and
+  The original SAIL source (`parshl-source.txt`) initializes `Maxamp ← 0` (L942) and
   never updates it from the synthesis buffer — it is passed to `WriteH()` (L1795) only
   as file-header metadata. The `Sando()` output routine writes samples raw, with no
   clamping. **By default, this port does not prevent overshoot either: synthesized
