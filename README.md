@@ -184,3 +184,10 @@ Non-Harmonic Sounds Based on a Sinusoidal Representation", ICMC-87 / CMJ 14(4),
 1990) is available from the original author's page:
 <https://ccrma.stanford.edu/~jos/parshl/>. If you use this code in academic
 work, please cite that paper and this repository.
+
+## Acknowledgments
+
+Static analysis for this project was performed with
+[PVS-Studio](https://pvs-studio.com), a static code analyzer for C and C++.
+Thanks to PVS-Studio LLC for kindly providing a license in support of this
+academic research.
